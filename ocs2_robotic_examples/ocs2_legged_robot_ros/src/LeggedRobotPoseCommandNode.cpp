@@ -29,12 +29,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include <string>
 
-#include <ros/init.h>
-#include <ros/package.h>
+#include "ament_index_cpp/get_package_share_directory.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 #include <ocs2_core/Types.h>
 #include <ocs2_core/misc/LoadData.h>
-#include <ocs2_ros_interfaces/command/TargetTrajectoriesKeyboardPublisher.h>
+#include <ocs2_ros2_interfaces/command/TargetTrajectoriesKeyboardPublisher.h>
 
 using namespace ocs2;
 
@@ -97,12 +97,19 @@ TargetTrajectories commandLineToTargetTrajectories(const vector_t& commadLineTar
 int main(int argc, char* argv[]) {
   const std::string robotName = "legged_robot";
 
+  std::vector<std::string> programArgs = rclcpp::remove_ros_arguments(argc, argv);
+  if (programArgs.size() <= 1) {
+    throw std::runtime_error("No task file specified. Aborting.");
+  }
+  std::string taskFileFolderName = std::string(programArgs[1]);
+  std::string referenceFileFolderName = std::string(programArgs[2]);
+
   // Initialize ros node
-  ::ros::init(argc, argv, robotName + "_target");
-  ::ros::NodeHandle nodeHandle;
-  // Get node parameters
-  std::string referenceFile;
-  nodeHandle.getParam("/referenceFile", referenceFile);
+  rclcpp::init(argc, argv);
+  rclcpp::Node::SharedPtr nodeHandle = rclcpp::Node::make_shared(robotName + "_target");
+
+  const std::string referenceFile =
+      ament_index_cpp::get_package_share_directory("ocs2_legged_robot") + "/config/" + referenceFileFolderName + "/reference.info";
 
   loadData::loadCppDataType(referenceFile, "comHeight", comHeight);
   loadData::loadEigenMatrix(referenceFile, "defaultJointState", defaultJointState);

@@ -10,9 +10,9 @@ TEST(testLinearController, testSerialization) {
   matrix_array_t gain = {matrix_t::Random(2, 3), matrix_t::Random(2, 3)};
   LinearController controller(time, bias, gain);
 
-  std::vector<std::vector<float>> data(2);
-  std::vector<std::vector<float>*> dataPtr{&data[0], &data[1]};
-  std::vector<std::vector<float> const*> dataPtrConst{&data[0], &data[1]};
+  std::vector<std::vector<double>> data(2);
+  std::vector<std::vector<double>*> dataPtr{&data[0], &data[1]};
+  std::vector<std::vector<double> const*> dataPtrConst{&data[0], &data[1]};
 
   controller.flatten(time, dataPtr);
 

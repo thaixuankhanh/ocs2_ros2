@@ -29,16 +29,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <robot_state_publisher/robot_state_publisher.h>
-#include <ros/node_handle.h>
-#include <tf/transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <ocs2_centroidal_model/CentroidalModelInfo.h>
 #include <ocs2_core/Types.h>
 #include <ocs2_legged_robot/common/Types.h>
 #include <ocs2_pinocchio_interface/PinocchioEndEffectorKinematics.h>
-#include <ocs2_ros_interfaces/mrt/DummyObserver.h>
-#include <ocs2_ros_interfaces/visualization/VisualizationColors.h>
+#include <ocs2_ros2_interfaces/mrt/DummyObserver.h>
+#include <ocs2_ros2_interfaces/visualization/VisualizationColors.h>
+
+#include <sensor_msgs/msg/joint_state.hpp>
+#include <visualization_msgs/msg/marker_array.hpp>
+#include <visualization_msgs/msg/marker.hpp>
 
 namespace ocs2 {
 namespace legged_robot {
@@ -62,45 +65,53 @@ class LeggedRobotVisualizer : public DummyObserver {
    * @param n
    * @param maxUpdateFrequency : maximum publish frequency measured in MPC time.
    */
-  LeggedRobotVisualizer(PinocchioInterface pinocchioInterface, CentroidalModelInfo centroidalModelInfo,
-                        const PinocchioEndEffectorKinematics& endEffectorKinematics, ros::NodeHandle& nodeHandle,
+  LeggedRobotVisualizer(PinocchioInterface pinocchioInterface,
+                        CentroidalModelInfo centroidalModelInfo,
+                        const PinocchioEndEffectorKinematics& endEffectorKinematics,
+                        rclcpp::Node::SharedPtr nodeHandle,
                         scalar_t maxUpdateFrequency = 100.0);
 
   ~LeggedRobotVisualizer() override = default;
 
   void update(const SystemObservation& observation, const PrimalSolution& primalSolution, const CommandData& command) override;
 
-  void launchVisualizerNode(ros::NodeHandle& nodeHandle);
+  void launchVisualizerNode(rclcpp::Node::SharedPtr nodeHandle);
 
   void publishTrajectory(const std::vector<SystemObservation>& system_observation_array, scalar_t speed = 1.0);
 
-  void publishObservation(ros::Time timeStamp, const SystemObservation& observation);
+  void publishObservation(const builtin_interfaces::msg::Time timeStamp, const SystemObservation& observation);
 
-  void publishDesiredTrajectory(ros::Time timeStamp, const TargetTrajectories& targetTrajectories);
+  void publishDesiredTrajectory(const builtin_interfaces::msg::Time timeStamp, const TargetTrajectories& targetTrajectories);
 
-  void publishOptimizedStateTrajectory(ros::Time timeStamp, const scalar_array_t& mpcTimeTrajectory,
-                                       const vector_array_t& mpcStateTrajectory, const ModeSchedule& modeSchedule);
+  void publishOptimizedStateTrajectory(const builtin_interfaces::msg::Time timeStamp,
+                                       const scalar_array_t& mpcTimeTrajectory,
+                                       const vector_array_t& mpcStateTrajectory,
+                                       const ModeSchedule& modeSchedule);
 
  private:
   LeggedRobotVisualizer(const LeggedRobotVisualizer&) = delete;
-  void publishJointTransforms(ros::Time timeStamp, const vector_t& jointAngles) const;
-  void publishBaseTransform(ros::Time timeStamp, const vector_t& basePose);
-  void publishCartesianMarkers(ros::Time timeStamp, const contact_flag_t& contactFlags, const std::vector<vector3_t>& feetPositions,
+  void publishJointTransforms(const builtin_interfaces::msg::Time timeStamp, const vector_t& jointAngles) const;
+  void publishBaseTransform(const builtin_interfaces::msg::Time timeStamp, const vector_t& basePose);
+  void publishCartesianMarkers(const builtin_interfaces::msg::Time timeStamp,
+                               const contact_flag_t& contactFlags,
+                               const std::vector<vector3_t>& feetPositions,
                                const std::vector<vector3_t>& feetForces) const;
 
   PinocchioInterface pinocchioInterface_;
   const CentroidalModelInfo centroidalModelInfo_;
   std::unique_ptr<PinocchioEndEffectorKinematics> endEffectorKinematicsPtr_;
 
-  tf::TransformBroadcaster tfBroadcaster_;
-  std::unique_ptr<robot_state_publisher::RobotStatePublisher> robotStatePublisherPtr_;
+  rclcpp::Node::SharedPtr nodeHandle_;
 
-  ros::Publisher costDesiredBasePositionPublisher_;
-  std::vector<ros::Publisher> costDesiredFeetPositionPublishers_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr jointStatePublisher_;
 
-  ros::Publisher stateOptimizedPublisher_;
+  rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr costDesiredBasePositionPublisher_;
+  std::vector<rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr> costDesiredFeetPositionPublishers_;
 
-  ros::Publisher currentStatePublisher_;
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr stateOptimizedPublisher_;
+
+  rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr currentStatePublisher_;
 
   scalar_t lastTime_;
   scalar_t minPublishTimeDifference_;

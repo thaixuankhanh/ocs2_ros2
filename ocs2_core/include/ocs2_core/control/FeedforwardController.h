@@ -99,12 +99,12 @@ class FeedforwardController final : public ControllerBase {
 
   void display() const override;
 
-  void flatten(const scalar_array_t& timeArray, const std::vector<std::vector<float>*>& flatArray2) const override;
+  void flatten(const scalar_array_t& timeArray, const std::vector<std::vector<double>*>& flatArray2) const override;
 
-  static FeedforwardController unFlatten(const scalar_array_t& timeArray, const std::vector<std::vector<float> const*>& flatArray2);
+  static FeedforwardController unFlatten(const scalar_array_t& timeArray, const std::vector<std::vector<double> const*>& flatArray2);
 
  private:
-  void flattenSingle(scalar_t time, std::vector<float>& flatArray) const;
+  void flattenSingle(scalar_t time, std::vector<double>& flatArray) const;
 
  public:
   scalar_array_t timeStamp_;

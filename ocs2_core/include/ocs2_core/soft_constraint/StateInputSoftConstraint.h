@@ -89,6 +89,10 @@ class StateInputSoftConstraint final : public StateInputCost {
                                                                  const TargetTrajectories& /* targetTrajectories */,
                                                                  const PreComputation& preComp) const override;
 
+  MultidimensionalPenalty& getPenalty() { return penalty_; }
+
+  std::unique_ptr<StateInputConstraint>& getConstraintPtr() { return constraintPtr_; }
+
  private:
   StateInputSoftConstraint(const StateInputSoftConstraint& other);
 

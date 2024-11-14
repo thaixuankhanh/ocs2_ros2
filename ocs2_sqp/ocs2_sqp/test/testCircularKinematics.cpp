@@ -37,7 +37,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 TEST(test_circular_kinematics, solve_projected_EqConstraints) {
   // optimal control problem
-  ocs2::OptimalControlProblem problem = ocs2::createCircularKinematicsProblem("/tmp/ocs2/sqp_test_generated");
+  ocs2::OptimalControlProblem problem = ocs2::createCircularKinematicsProblem("/tmp/sqp_test_generated");
 
   // Initializer
   ocs2::DefaultInitializer zeroInitializer(2);
@@ -60,7 +60,7 @@ TEST(test_circular_kinematics, solve_projected_EqConstraints) {
 
   // Solve
   ocs2::SqpSolver solver(settings, problem, zeroInitializer);
-  solver.run(startTime, initState, finalTime);
+  solver.run(startTime, initState, 0, finalTime);
 
   // Inspect solution
   const auto primalSolution = solver.primalSolution(finalTime);
@@ -113,7 +113,7 @@ TEST(test_circular_kinematics, solve_EqConstraints_inQPSubproblem) {
 
   // Solve
   ocs2::SqpSolver solver(settings, problem, zeroInitializer);
-  solver.run(startTime, initState, finalTime);
+  solver.run(startTime, initState, 0, finalTime);
 
   // Inspect solution
   const auto primalSolution = solver.primalSolution(finalTime);

@@ -93,7 +93,7 @@ vector_t FeedforwardController::computeInput(scalar_t t, const vector_t& x) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void FeedforwardController::flatten(const scalar_array_t& timeArray, const std::vector<std::vector<float>*>& flatArray2) const {
+void FeedforwardController::flatten(const scalar_array_t& timeArray, const std::vector<std::vector<double>*>& flatArray2) const {
   const auto timeSize = timeArray.size();
   const auto dataSize = flatArray2.size();
 
@@ -109,7 +109,7 @@ void FeedforwardController::flatten(const scalar_array_t& timeArray, const std::
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void FeedforwardController::flattenSingle(scalar_t time, std::vector<float>& flatArray) const {
+void FeedforwardController::flattenSingle(scalar_t time, std::vector<double>& flatArray) const {
   /* Serialized feedforward controller:
    * data = [
    *   [ uff(t0)[:] ],
@@ -121,19 +121,19 @@ void FeedforwardController::flattenSingle(scalar_t time, std::vector<float>& fla
 
   const vector_t uff = LinearInterpolation::interpolate(time, timeStamp_, uffArray_);
 
-  flatArray = std::vector<float>(uff.data(), uff.data() + uff.rows());
+  flatArray = std::vector<double>(uff.data(), uff.data() + uff.rows());
 }
 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
 FeedforwardController FeedforwardController::unFlatten(const scalar_array_t& timeArray,
-                                                       const std::vector<std::vector<float> const*>& flatArray2) {
+                                                       const std::vector<std::vector<double> const*>& flatArray2) {
   vector_array_t uffArray;
   uffArray.reserve(flatArray2.size());
 
   for (const auto& arr : flatArray2) {  // loop through time
-    uffArray.emplace_back(Eigen::Map<const Eigen::VectorXf>(arr->data(), arr->size()).cast<scalar_t>());
+    uffArray.emplace_back(Eigen::Map<const Eigen::VectorXd>(arr->data(), arr->size()));
   }
   return FeedforwardController(timeArray, std::move(uffArray));
 }

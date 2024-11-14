@@ -49,7 +49,7 @@ class LoopshapingReferenceManager final : public ReferenceManagerDecorator {
 
   ~LoopshapingReferenceManager() override = default;
 
-  void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState) override;
+  void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState, size_t initMode) override;
 
  private:
   std::shared_ptr<ocs2::LoopshapingDefinition> loopshapingDefinitionPtr_;

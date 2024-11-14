@@ -126,7 +126,7 @@ class ControllerBase {
    * @param[in] timeArray array of query times
    * @param[out] flatArray2 The array of arrays that is to be filled, i.e., the compressed controller. One array per query time
    */
-  virtual void flatten(const scalar_array_t& timeArray, const std::vector<std::vector<float>*>& flatArray2) const {
+  virtual void flatten(const scalar_array_t& timeArray, const std::vector<std::vector<double>*>& flatArray2) const {
     throw std::runtime_error("ControllerBase::flatten: not implemented.");
   }
 

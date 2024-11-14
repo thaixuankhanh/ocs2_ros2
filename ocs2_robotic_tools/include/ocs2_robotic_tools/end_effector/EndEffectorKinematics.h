@@ -42,6 +42,8 @@ class EndEffectorKinematics {
  public:
   using vector3_t = Eigen::Matrix<SCALAR_T, 3, 1>;
   using matrix3x_t = Eigen::Matrix<SCALAR_T, 3, Eigen::Dynamic>;
+  using vector6_t = Eigen::Matrix<SCALAR_T, 6, 1>;
+  using matrix6x_t = Eigen::Matrix<SCALAR_T, 6, Eigen::Dynamic>;
   using vector_t = Eigen::Matrix<SCALAR_T, Eigen::Dynamic, 1>;
   using quaternion_t = Eigen::Quaternion<SCALAR_T>;
 
@@ -71,6 +73,14 @@ class EndEffectorKinematics {
   virtual std::vector<vector3_t> getVelocity(const vector_t& state, const vector_t& input) const = 0;
 
   /**
+   * Get orientation w.r.t. world frame
+   *
+   * @param [in] state vector
+   * @return array of quaternions
+   */
+  virtual std::vector<quaternion_t> getOrientation(const vector_t& state) const = 0;
+
+  /**
    * Get orientation error in world frame
    *
    * @note: To calculate the error use quaternionDistance() from ocs2_robotic_tools/common/RotationTransforms.h
@@ -81,6 +91,40 @@ class EndEffectorKinematics {
    */
   virtual std::vector<vector3_t> getOrientationError(const vector_t& state,
                                                      const std::vector<quaternion_t>& referenceOrientations) const = 0;
+
+  /**
+   * Get orientation error in world frame
+   *
+   * @note: To calculate the orientation error with respect to a plane using quaternionDistance() from
+   * ocs2_robotic_tools/common/RotationTransforms.h
+   *
+   * @param [in] state vector
+   * @param [in] planeNormals: reference plane normals in world frame
+   * @return array of orientation errors
+   */
+  virtual std::vector<vector3_t> getOrientationErrorWrtPlane(const vector_t& state, const std::vector<vector3_t>& planeNormals) const = 0;
+
+  /**
+   * Get end-effector angular velocity vectors in world frame
+   *
+   * @note: To calculate the error use quaternionDistance() from ocs2_robotic_tools/common/RotationTransforms.h
+   *
+   * @param [in] state vector
+   * @param [in] input: input vector
+   * @return array of angular velocities
+   */
+  virtual std::vector<vector3_t> getAngularVelocity(const vector_t& state, const vector_t& input) const = 0;
+
+  /**
+   * Get end-effector twist (linear & angular velocity) vectors in world frame
+   *
+   * @note: To calculate the error use quaternionDistance() from ocs2_robotic_tools/common/RotationTransforms.h
+   *
+   * @param [in] state vector
+   * @param [in] input: input vector
+   * @return array of twists
+   */
+  virtual std::vector<vector6_t> getTwist(const vector_t& state, const vector_t& input) const = 0;
 
   /**
    * Get end-effector position linear approximation in world frame
@@ -101,6 +145,26 @@ class EndEffectorKinematics {
                                                                                         const vector_t& input) const = 0;
 
   /**
+   * Get end-effector angular velocity linear approximation in world frame
+   *
+   * @param [in] state: state vector
+   * @param [in] input: input vector
+   * @return array of velocity function linear approximations
+   */
+  virtual std::vector<VectorFunctionLinearApproximation> getAngularVelocityLinearApproximation(const vector_t& state,
+                                                                                               const vector_t& input) const = 0;
+
+  /**
+   * Get end-effector twist (linear & angular velocity) linear approximation in world frame
+   *
+   * @param [in] state: state vector
+   * @param [in] input: input vector
+   * @return array of twist function linear approximations
+   */
+  virtual std::vector<VectorFunctionLinearApproximation> getTwistLinearApproximation(const vector_t& state,
+                                                                                     const vector_t& input) const = 0;
+
+  /**
    * Get end-effector orintation error linear approximation in world frame
    *
    * @note: To calculate the error and Jacobian use quaternionDistance() and quaternionDistanceJacobian() from
@@ -112,6 +176,20 @@ class EndEffectorKinematics {
    */
   virtual std::vector<VectorFunctionLinearApproximation> getOrientationErrorLinearApproximation(
       const vector_t& state, const std::vector<quaternion_t>& referenceOrientations) const = 0;
+
+  /**
+   * Get end-effector orintation error with respect to plane linear approximation in world frame
+   *
+   * @note: To calculate the error and Jacobian use quaternionDistance() and quaternionDistanceJacobian() from
+   *        ocs2_robotic_tools/common/RotationTransforms.h
+   *
+   * @param [in] state: state vector
+   * @param [in] planeNormals: plane normals in world frame
+   * @return array of orientation error linear approximations
+   */
+
+  virtual std::vector<VectorFunctionLinearApproximation> getOrientationErrorWrtPlaneLinearApproximation(
+      const vector_t& state, const std::vector<vector3_t>& planeNormals) const = 0;
 
  protected:
   EndEffectorKinematics(const EndEffectorKinematics&) = default;

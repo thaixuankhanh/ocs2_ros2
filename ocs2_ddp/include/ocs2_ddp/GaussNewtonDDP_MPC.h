@@ -51,8 +51,11 @@ class GaussNewtonDDP_MPC final : public MPC_BASE {
    * @param [in] optimalControlProblem: The optimal control problem definition.
    * @param [in] initializer: This class initializes the state-input for the time steps that no controller is available.
    */
-  GaussNewtonDDP_MPC(mpc::Settings mpcSettings, ddp::Settings ddpSettings, const RolloutBase& rollout,
-                     const OptimalControlProblem& optimalControlProblem, const Initializer& initializer)
+  GaussNewtonDDP_MPC(mpc::Settings mpcSettings,
+                     ddp::Settings ddpSettings,
+                     const RolloutBase& rollout,
+                     const OptimalControlProblem& optimalControlProblem,
+                     const Initializer& initializer)
       : MPC_BASE(std::move(mpcSettings)) {
     switch (ddpSettings.algorithm_) {
       case ddp::Algorithm::SLQ:
@@ -73,11 +76,11 @@ class GaussNewtonDDP_MPC final : public MPC_BASE {
   const GaussNewtonDDP* getSolverPtr() const override { return ddpPtr_.get(); }
 
  private:
-  void calculateController(scalar_t initTime, const vector_t& initState, scalar_t finalTime) override {
+  void calculateController(scalar_t initTime, const vector_t& initState, size_t currentMode, scalar_t finalTime) override {
     if (settings().coldStart_) {
       ddpPtr_->reset();
     }
-    ddpPtr_->run(initTime, initState, finalTime);
+    ddpPtr_->run(initTime, initState, currentMode, finalTime);
   }
 
   std::unique_ptr<GaussNewtonDDP> ddpPtr_;

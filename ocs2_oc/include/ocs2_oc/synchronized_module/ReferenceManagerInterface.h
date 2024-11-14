@@ -59,7 +59,7 @@ class ReferenceManagerInterface {
    * @param [in] finalTime : Final time of the optimization horizon.
    * @param [in] initState : State at the start of the optimization horizon.
    */
-  virtual void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState){};
+  virtual void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState, size_t initMode){};
 
   /** Returns a const reference to the active ModeSchedule. */
   virtual const ModeSchedule& getModeSchedule() const = 0;

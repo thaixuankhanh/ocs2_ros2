@@ -58,6 +58,12 @@ class QuadraticStateInputCost : public StateInputCost {
                                                                  const TargetTrajectories& targetTrajectories,
                                                                  const PreComputation&) const final;
 
+  /** Set the gain matrices */
+  void setGains(matrix_t Q, matrix_t R, matrix_t P = matrix_t());
+
+  /** Get the gain matrices */
+  void getGains(matrix_t& Q, matrix_t& R, matrix_t& P) const;
+
  protected:
   QuadraticStateInputCost(const QuadraticStateInputCost& rhs) = default;
 

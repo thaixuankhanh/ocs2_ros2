@@ -50,7 +50,7 @@ void MPC_BASE::reset() {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-bool MPC_BASE::run(scalar_t currentTime, const vector_t& currentState) {
+bool MPC_BASE::run(scalar_t currentTime, const vector_t& currentState, size_t currentMode) {
   // check if the current time exceeds the solver final limit
   if (!initRun_ && currentTime >= getSolverPtr()->getFinalTime()) {
     std::cerr << "WARNING: The MPC time-horizon is smaller than the MPC starting time.\n";
@@ -72,7 +72,7 @@ bool MPC_BASE::run(scalar_t currentTime, const vector_t& currentState) {
   }
 
   // calculate the MPC policy
-  calculateController(currentTime, currentState, finalTime);
+  calculateController(currentTime, currentState, currentMode, finalTime);
 
   // set initRun flag to false
   initRun_ = false;

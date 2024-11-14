@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
 #include <ocs2_ballbot/definitions.h>
-#include <ocs2_ros_interfaces/command/TargetTrajectoriesKeyboardPublisher.h>
+#include <ocs2_ros2_interfaces/command/TargetTrajectoriesKeyboardPublisher.h>
 
 using namespace ocs2;
 using namespace ballbot;
@@ -71,8 +71,8 @@ TargetTrajectories commandLineToTargetTrajectories(const vector_t& commadLineTar
  */
 int main(int argc, char* argv[]) {
   const std::string robotName = "ballbot";
-  ::ros::init(argc, argv, robotName + "_target");
-  ::ros::NodeHandle nodeHandle;
+  rclcpp::init(argc, argv);
+  rclcpp::Node::SharedPtr nodeHandle = rclcpp::Node::make_shared(robotName + "_target");
 
   // [deltaX, deltaY, deltaYaw]
   const scalar_array_t relativeStateLimit{10.0, 10.0, 360.0};

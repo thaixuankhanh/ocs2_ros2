@@ -89,6 +89,8 @@ class StateSoftConstraint final : public StateCost {
                                                                  const TargetTrajectories& /* targetTrajectories */,
                                                                  const PreComputation& preComp) const override;
 
+  MultidimensionalPenalty& getPenalty() { return penalty_; }
+
  private:
   StateSoftConstraint(const StateSoftConstraint& other);
 

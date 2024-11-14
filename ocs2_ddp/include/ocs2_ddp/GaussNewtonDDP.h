@@ -83,6 +83,8 @@ class GaussNewtonDDP : public SolverBase {
 
   const OptimalControlProblem& getOptimalControlProblem() const override { return optimalControlProblemStock_.front(); }
 
+  std::vector<OptimalControlProblem>& getOcpDefinitions() { return optimalControlProblemStock_; }
+
   const PerformanceIndex& getPerformanceIndeces() const override { return performanceIndex_; }
 
   const std::vector<PerformanceIndex>& getIterationsLog() const override { return performanceIndexHistory_; }
@@ -113,6 +115,17 @@ class GaussNewtonDDP : public SolverBase {
    * Const access to ddp settings
    */
   const ddp::Settings& settings() const { return ddpSettings_; }
+
+  /** All timings are expressed in milliseconds */
+  struct Benchmarks {
+    scalar_t initializationTime;
+    scalar_t linearQuadraticApproximationTime;
+    scalar_t backwardPassTime;
+    scalar_t computeControllerTime;
+    scalar_t searchStrategyTime;
+    scalar_t totalDualSolutionTime;
+  };
+  Benchmarks getBenchmarks() const;
 
  protected:
   /**

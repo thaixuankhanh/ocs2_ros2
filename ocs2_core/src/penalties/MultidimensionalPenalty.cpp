@@ -49,6 +49,9 @@ class PenaltyBaseWrapper final : public augmented::AugmentedPenaltyBase {
   scalar_t getDerivative(scalar_t t, scalar_t l, scalar_t h) const override { return penaltyPtr_->getDerivative(t, h); }
   scalar_t getSecondDerivative(scalar_t t, scalar_t l, scalar_t h) const override { return penaltyPtr_->getSecondDerivative(t, h); }
 
+  void setParameters(const vector_t& parameters) override { penaltyPtr_->setParameters(parameters); }
+  void getParameters(vector_t& parameters) const override { penaltyPtr_->getParameters(parameters); }
+
   scalar_t updateMultiplier(scalar_t t, scalar_t l, scalar_t h) const override {
     throw std::runtime_error("[" + name() + "] This penalty is only applicable to soft constraints!");
   }

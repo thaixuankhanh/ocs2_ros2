@@ -80,6 +80,16 @@ class PenaltyBase {
    */
   virtual scalar_t getSecondDerivative(scalar_t t, scalar_t h) const = 0;
 
+  /**
+   * Set custom parameters of the penalty function.
+   */
+  virtual void setParameters(const vector_t& /*parameters*/) {}
+
+  /**
+   * Get the number of parameters of the penalty function.
+   */
+  virtual void getParameters(vector_t& /*parameters*/) const {}
+
  protected:
   PenaltyBase(const PenaltyBase& other) = default;
 };

@@ -124,7 +124,7 @@ class TestGNStateInputCost : public ocs2::StateInputCostGaussNewtonAd {
   }
 
   ocs2::ad_vector_t costVectorFunction(ocs2::ad_scalar_t time, const ocs2::ad_vector_t& state, const ocs2::ad_vector_t& input,
-                                       const ocs2::ad_vector_t& parameters) const override {
+                                       const ocs2::ad_vector_t& parameters) override {
     return costVector(time, state, input);
   }
 

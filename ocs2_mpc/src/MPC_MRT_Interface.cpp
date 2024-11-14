@@ -61,6 +61,15 @@ void MPC_MRT_Interface::setCurrentObservation(const SystemObservation& currentOb
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
+
+SystemObservation MPC_MRT_Interface::getCurrentObservation() {
+  std::lock_guard<std::mutex> lock(observationMutex_);
+  return currentObservation_;
+}
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
 ReferenceManagerInterface& MPC_MRT_Interface::getReferenceManager() {
   return mpc_.getSolverPtr()->getReferenceManager();
 }
@@ -85,7 +94,24 @@ void MPC_MRT_Interface::advanceMpc() {
     currentObservation = currentObservation_;
   }
 
-  bool controllerIsUpdated = mpc_.run(currentObservation.time, currentObservation.state);
+  bool controllerIsUpdated;
+
+  try {
+    controllerIsUpdated = mpc_.run(currentObservation.time, currentObservation.state, currentObservation.mode);
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << '\n';
+    std::cerr << "\n#####################################################"
+              << "\n###############   MPC HAS CRASHED.   ################"
+              << "\n#####################################################\n";
+    std::cerr << "Time: \n";
+    std::cerr << currentObservation.time << "\n";
+    std::cerr << "State: \n";
+    std::cerr << currentObservation.state << "\n";
+    std::cerr << "Desired Trajectories: \n";
+    std::cerr << mpc_.getSolverPtr()->getReferenceManager().getTargetTrajectories() << std::endl;
+    throw(std::runtime_error("MPC has crashed!"));
+  }
+
   if (!controllerIsUpdated) {
     return;
   }

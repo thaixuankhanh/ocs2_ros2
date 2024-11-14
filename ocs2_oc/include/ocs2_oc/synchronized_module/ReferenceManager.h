@@ -45,7 +45,7 @@ class ReferenceManager : public ReferenceManagerInterface {
 
   ~ReferenceManager() override = default;
 
-  void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState) override;
+  void preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState,  size_t initMode) override;
 
   const ModeSchedule& getModeSchedule() const override { return modeSchedule_.get(); }
   void setModeSchedule(const ModeSchedule& modeSchedule) override { modeSchedule_.setBuffer(modeSchedule); }
@@ -71,7 +71,7 @@ class ReferenceManager : public ReferenceManagerInterface {
    * @param [in, out] modeSchedule : The updated ModeSchedule. If setModeSchedule() has been called before, modeSchedule is
    * already updated by the set value.
    */
-  virtual void modifyReferences(scalar_t initTime, scalar_t finalTime, const vector_t& initState, TargetTrajectories& targetTrajectories,
+  virtual void modifyReferences(scalar_t initTime, scalar_t finalTime, const vector_t& initState, size_t initMode, TargetTrajectories& targetTrajectories,
                                 ModeSchedule& modeSchedule) {}
 
  private:
