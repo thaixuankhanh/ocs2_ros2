@@ -12,19 +12,31 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/MpcState.idl"
   "msg/MpcInput.idl"
-	"msg/ModeSchedule.idl"
+  "msg/ModeSchedule.idl"
   "msg/MpcObservation.idl"
   "msg/MpcPerformanceIndices.idl"
   "msg/MpcTargetTrajectories.idl"
-	"msg/ControllerData.idl"
+  "msg/ControllerData.idl"
   "msg/MpcFlattenedController.idl"
+  "msg/BezierSegment.idl"
+  "msg/BezierTrajectory.idl"
+  "msg/ThreeDofPointTS.idl"
+  "msg/ThreeDofPath.idl"
+  "msg/Gains.idl"
+  "msg/IndividualGains.idl"
+  "msg/Benchmarks.idl"
+  "msg/IndividualBenchmarks.idl"
+  "msg/Constraint.idl"
+  "msg/LagrangianMetrics.idl"
+  "msg/Multiplier.idl"
   "srv/Reset.srv"
 
-  DEPENDENCIES std_msgs
+  DEPENDENCIES std_msgs geometry_msgs
 
 )
 

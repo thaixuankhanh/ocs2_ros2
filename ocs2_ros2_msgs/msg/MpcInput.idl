@@ -3,7 +3,7 @@ module ocs2_ros2_msgs {
 
     @TypeCode(type="ocs2_ros2_msgs::msg::dds_::MpcInput_")
     struct MpcInput {
-      sequence<float> value;
+      sequence<double> value;
     };
   };
 };

@@ -17,6 +17,8 @@ module ocs2_ros2_msgs {
     @TypeCode(type="ocs2_ros2_msgs::msg::dds_::MpcFlattenedController_")
     struct MpcFlattenedController {
 
+      long api_version;
+
       octet controller_type;
 
       ocs2_ros2_msgs::msg::MpcObservation init_observation;
@@ -27,7 +29,7 @@ module ocs2_ros2_msgs {
 
       sequence<ocs2_ros2_msgs::msg::MpcInput> input_trajectory;
 
-      sequence<float> time_trajectory;
+      sequence<double> time_trajectory;
 
       sequence<octet> post_event_indices;
 

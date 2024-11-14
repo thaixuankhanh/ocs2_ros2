@@ -3,7 +3,7 @@ module ocs2_ros2_msgs {
 
     @TypeCode(type="ocs2_ros2_msgs::msg::dds_::ModeSchedule_")
     struct ModeSchedule {
-      sequence<float> event_times;
+      sequence<double> event_times;
 
       sequence<long> mode_sequence;
     };

@@ -3,13 +3,13 @@ module ocs2_ros2_msgs {
 
     @TypeCode(type="ocs2_ros2_msgs::msg::dds_::MpcPerformanceIndices_")
     struct MpcPerformanceIndices {
-      float init_time;
-      float merit;
-      float cost;
-      float dynamics_violation_sse;
-      float equality_constraints_sse;
-      float equality_lagrangian;
-      float inequality_lagrangian;
+      double init_time;
+      double merit;
+      double cost;
+      double dynamics_violation_sse;
+      double equality_constraints_sse;
+      double equality_lagrangian;
+      double inequality_lagrangian;
     };
   };
 };

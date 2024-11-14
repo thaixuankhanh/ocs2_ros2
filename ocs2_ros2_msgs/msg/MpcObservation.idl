@@ -7,7 +7,11 @@ module ocs2_ros2_msgs {
     @TypeCode(type="ocs2_ros2_msgs::msg::dds_::MpcObservation_")
     struct MpcObservation {
 
-      float time;
+      long api_version;
+
+      boolean reset_solver;
+
+      double time;
 
       ocs2_ros2_msgs::msg::MpcState state;
 
