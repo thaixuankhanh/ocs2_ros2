@@ -200,6 +200,18 @@ TEST_F(TestEndEffectorKinematics, testVelocityApproximation) {
   compareApproximation(eeVelLin, eeVelLinAd, /* functionOfInput = */ true);
 }
 
+TEST_F(TestEndEffectorKinematics, testOrientation) {
+  const auto& model = pinocchioInterfacePtr->getModel();
+  auto& data = pinocchioInterfacePtr->getData();
+  pinocchio::forwardKinematics(model, data, q);
+  pinocchio::updateFramePlacements(model, data);
+  eeKinematicsPtr->setPinocchioInterface(*pinocchioInterfacePtr);
+
+  const auto eeOrientationError = eeKinematicsPtr->getOrientation(x)[0];
+  const auto eeOrientationErrorAd = eeKinematicsCppAdPtr->getOrientation(x)[0];
+  EXPECT_TRUE(eeOrientationError.isApprox(eeOrientationErrorAd));
+}
+
 TEST_F(TestEndEffectorKinematics, testOrientationError) {
   const auto& model = pinocchioInterfacePtr->getModel();
   auto& data = pinocchioInterfacePtr->getData();

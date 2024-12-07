@@ -69,10 +69,15 @@ class PinocchioEndEffectorKinematicsCppAd final : public EndEffectorKinematics<s
    *                                  available.
    * @param [in] verbose : print information.
    */
-  PinocchioEndEffectorKinematicsCppAd(const PinocchioInterface& pinocchioInterface, const PinocchioStateInputMapping<ad_scalar_t>& mapping,
-                                      std::vector<std::string> endEffectorIds, size_t stateDim, size_t inputDim,
-                                      const std::string& modelName, const std::string& modelFolder = "/tmp/ocs2",
-                                      bool recompileLibraries = true, bool verbose = false);
+  PinocchioEndEffectorKinematicsCppAd(const PinocchioInterface& pinocchioInterface,
+                                      const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                                      std::vector<std::string> endEffectorIds,
+                                      size_t stateDim,
+                                      size_t inputDim,
+                                      const std::string& modelName,
+                                      const std::string& modelFolder = "/tmp/ocs2",
+                                      bool recompileLibraries = true,
+                                      bool verbose = false);
 
   /** Constructor
    * @param [in] pinocchioInterface pinocchio interface.
@@ -88,10 +93,16 @@ class PinocchioEndEffectorKinematicsCppAd final : public EndEffectorKinematics<s
    *                                  available.
    * @param [in] verbose : print information.
    */
-  PinocchioEndEffectorKinematicsCppAd(const PinocchioInterface& pinocchioInterface, const PinocchioStateInputMapping<ad_scalar_t>& mapping,
-                                      std::vector<std::string> endEffectorIds, size_t stateDim, size_t inputDim,
-                                      update_pinocchio_interface_callback updateCallback, const std::string& modelName,
-                                      const std::string& modelFolder = "/tmp/ocs2", bool recompileLibraries = true, bool verbose = false);
+  PinocchioEndEffectorKinematicsCppAd(const PinocchioInterface& pinocchioInterface,
+                                      const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                                      std::vector<std::string> endEffectorIds,
+                                      size_t stateDim,
+                                      size_t inputDim,
+                                      update_pinocchio_interface_callback updateCallback,
+                                      const std::string& modelName,
+                                      const std::string& modelFolder = "/tmp/ocs2",
+                                      bool recompileLibraries = true,
+                                      bool verbose = false);
 
   ~PinocchioEndEffectorKinematicsCppAd() override = default;
   PinocchioEndEffectorKinematicsCppAd* clone() const override;
@@ -101,28 +112,65 @@ class PinocchioEndEffectorKinematicsCppAd final : public EndEffectorKinematics<s
 
   std::vector<vector3_t> getPosition(const vector_t& state) const override;
   std::vector<vector3_t> getVelocity(const vector_t& state, const vector_t& input) const override;
+
+  // This function contains no linear approximation due to the non-minimal quaternion representation of SO(3)
+  // Use getOrientationErrorLinearApproximation or getOrientationErrorWrtPlaneLinearApproximation is a linear approximation is needed.
+  std::vector<quaternion_t> getOrientation(const vector_t& state) const override;
   std::vector<vector3_t> getOrientationError(const vector_t& state, const std::vector<quaternion_t>& referenceOrientations) const override;
+  std::vector<vector3_t> getOrientationErrorWrtPlane(const vector_t& state, const std::vector<vector3_t>& planeNormals) const override;
+  std::vector<vector3_t> getAngularVelocity(const vector_t& state, const vector_t& input) const override;
+  std::vector<vector6_t> getTwist(const vector_t& state, const vector_t& input) const override;
 
   std::vector<VectorFunctionLinearApproximation> getPositionLinearApproximation(const vector_t& state) const override;
   std::vector<VectorFunctionLinearApproximation> getVelocityLinearApproximation(const vector_t& state,
                                                                                 const vector_t& input) const override;
   std::vector<VectorFunctionLinearApproximation> getOrientationErrorLinearApproximation(
       const vector_t& state, const std::vector<quaternion_t>& referenceOrientations) const override;
+  std::vector<VectorFunctionLinearApproximation> getOrientationErrorWrtPlaneLinearApproximation(
+      const vector_t& state, const std::vector<vector3_t>& planeNormals) const override;
+  std::vector<VectorFunctionLinearApproximation> getAngularVelocityLinearApproximation(const vector_t& state,
+                                                                                       const vector_t& input) const override;
+  std::vector<VectorFunctionLinearApproximation> getTwistLinearApproximation(const vector_t& state, const vector_t& input) const override;
+
+  // Expose auto differentiation functions publicly to allow for inclusion in gauss-newton costs
+  ad_vector_t getPositionCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
+                               const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                               const ad_vector_t& state);
+  ad_vector_t getVelocityCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
+                               const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                               const ad_vector_t& state,
+                               const ad_vector_t& input);
+
+  ad_vector_t getOrientationCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
+                                  const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                                  const ad_vector_t& state);
+  ad_vector_t getOrientationErrorCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
+                                       const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                                       const ad_vector_t& state,
+                                       const ad_vector_t& params);
+  ad_vector_t getOrientationErrorWrtPlaneCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
+                                               const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                                               const ad_vector_t& state,
+                                               const ad_vector_t& params);
+  ad_vector_t getAngularVelocityCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
+                                      const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                                      const ad_vector_t& state,
+                                      const ad_vector_t& input);
+  ad_vector_t getTwistCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
+                            const PinocchioStateInputMapping<ad_scalar_t>& mapping,
+                            const ad_vector_t& state,
+                            const ad_vector_t& input);
 
  private:
   PinocchioEndEffectorKinematicsCppAd(const PinocchioEndEffectorKinematicsCppAd& rhs);
 
-  ad_vector_t getPositionCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd, const PinocchioStateInputMapping<ad_scalar_t>& mapping,
-                               const ad_vector_t& state);
-  ad_vector_t getVelocityCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd, const PinocchioStateInputMapping<ad_scalar_t>& mapping,
-                               const ad_vector_t& state, const ad_vector_t& input);
-  ad_vector_t getOrientationErrorCppAd(PinocchioInterfaceCppAd& pinocchioInterfaceCppAd,
-                                       const PinocchioStateInputMapping<ad_scalar_t>& mapping, const ad_vector_t& state,
-                                       const ad_vector_t& params);
-
   std::unique_ptr<CppAdInterface> positionCppAdInterfacePtr_;
   std::unique_ptr<CppAdInterface> velocityCppAdInterfacePtr_;
+  std::unique_ptr<CppAdInterface> orientationCppAdInterfacePtr_;
   std::unique_ptr<CppAdInterface> orientationErrorCppAdInterfacePtr_;
+  std::unique_ptr<CppAdInterface> orientationErrorWrtPlaneCppAdInterfacePtr_;
+  std::unique_ptr<CppAdInterface> angularVelocityCppAdInterfacePtr_;
+  std::unique_ptr<CppAdInterface> twistCppAdInterfacePtr_;
 
   const std::vector<std::string> endEffectorIds_;
   std::vector<size_t> endEffectorFrameIds_;

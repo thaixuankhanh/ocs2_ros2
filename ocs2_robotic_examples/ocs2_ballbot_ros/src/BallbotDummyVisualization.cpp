@@ -27,10 +27,8 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#include <tf/tf.h>
-#include <urdf/model.h>
-#include <visualization_msgs/Marker.h>
 #include <kdl_parser/kdl_parser.hpp>
+#include <visualization_msgs/msg/marker.hpp>
 
 #include <ocs2_robotic_tools/common/RotationTransforms.h>
 
@@ -43,8 +41,8 @@ void BallbotDummyVisualization::update(const SystemObservation& observation, con
   const auto& targetTrajectories = command.mpcTargetTrajectories_;
 
   // publish world transform
-  ros::Time timeMsg = ros::Time::now();
-  geometry_msgs::TransformStamped world_transform;
+  const builtin_interfaces::msg::Time timeMsg = nodeHandle_->get_clock()->now();
+  geometry_msgs::msg::TransformStamped world_transform;
   world_transform.header.stamp = timeMsg;
   world_transform.header.frame_id = "odom";
   world_transform.child_frame_id = "world";
@@ -55,14 +53,14 @@ void BallbotDummyVisualization::update(const SystemObservation& observation, con
   world_transform.transform.rotation.y = 0.0;
   world_transform.transform.rotation.z = 0.0;
   world_transform.transform.rotation.w = 1.0;
-  tfBroadcaster_.sendTransform(world_transform);
+  tfBroadcaster_->sendTransform(world_transform);
 
   // publish command transform
   const Eigen::Vector3d desiredPositionWorldToTarget(targetTrajectories.stateTrajectory.back()(0),
                                                      targetTrajectories.stateTrajectory.back()(1), 0.0);
   const auto desiredQuaternionBaseToWorld =
       getQuaternionFromEulerAnglesZyx<double>(targetTrajectories.stateTrajectory.back().segment<3>(2));
-  geometry_msgs::TransformStamped command_frame_transform;
+  geometry_msgs::msg::TransformStamped command_frame_transform;
   command_frame_transform.header.stamp = timeMsg;
   command_frame_transform.header.frame_id = "odom";
   command_frame_transform.child_frame_id = "command";
@@ -73,7 +71,7 @@ void BallbotDummyVisualization::update(const SystemObservation& observation, con
   command_frame_transform.transform.rotation.x = desiredQuaternionBaseToWorld.x();
   command_frame_transform.transform.rotation.y = desiredQuaternionBaseToWorld.y();
   command_frame_transform.transform.rotation.z = desiredQuaternionBaseToWorld.z();
-  tfBroadcaster_.sendTransform(command_frame_transform);
+  tfBroadcaster_->sendTransform(command_frame_transform);
 
   // publish joints transforms
   std::map<std::string, double> jointPositions{{"jball_x", observation.state(0)},
@@ -81,23 +79,20 @@ void BallbotDummyVisualization::update(const SystemObservation& observation, con
                                                {"jbase_z", observation.state(2)},
                                                {"jbase_y", observation.state(3)},
                                                {"jbase_x", observation.state(4)}};
-  robotStatePublisherPtr_->publishTransforms(jointPositions, timeMsg);
+
+  sensor_msgs::msg::JointState jointState;
+  jointState.header.stamp = timeMsg;
+  for (const auto& [jointName, jointPosition] : jointPositions) {
+    jointState.name.push_back(jointName);
+    jointState.position.push_back(jointPosition);
+  }
+
+  jointPublisher_->publish(jointState);
 }
 
-void BallbotDummyVisualization::launchVisualizerNode(ros::NodeHandle& nodeHandle) {
-  // load a kdl-tree from the urdf robot description and initialize the robot state publisher
-  std::string urdfName = "robot_description";
-  urdf::Model model;
-  if (!model.initParam(urdfName)) {
-    ROS_ERROR("URDF model load was NOT successful");
-  }
-  KDL::Tree tree;
-  if (!kdl_parser::treeFromUrdfModel(model, tree)) {
-    ROS_ERROR("Failed to extract kdl tree from xml robot description");
-  }
-
-  robotStatePublisherPtr_.reset(new robot_state_publisher::RobotStatePublisher(tree));
-  robotStatePublisherPtr_->publishFixedTransforms(true);
+void BallbotDummyVisualization::launchVisualizerNode() {
+  jointPublisher_ = nodeHandle_->create_publisher<sensor_msgs::msg::JointState>("joint_states", 1);
+  tfBroadcaster_ = std::make_unique<tf2_ros::TransformBroadcaster>(nodeHandle_);
 }
 
 }  // namespace ballbot

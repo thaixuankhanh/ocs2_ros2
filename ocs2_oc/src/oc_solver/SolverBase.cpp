@@ -46,8 +46,8 @@ SolverBase::SolverBase() : referenceManagerPtr_(new ReferenceManager) {}
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void SolverBase::run(scalar_t initTime, const vector_t& initState, scalar_t finalTime) {
-  preRun(initTime, initState, finalTime);
+void SolverBase::run(scalar_t initTime, const vector_t& initState, size_t initMode, scalar_t finalTime) {
+  preRun(initTime, initState, initMode, finalTime);
   runImpl(initTime, initState, finalTime);
   postRun();
 }
@@ -55,8 +55,9 @@ void SolverBase::run(scalar_t initTime, const vector_t& initState, scalar_t fina
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void SolverBase::run(scalar_t initTime, const vector_t& initState, scalar_t finalTime, const ControllerBase* externalControllerPtr) {
-  preRun(initTime, initState, finalTime);
+void SolverBase::run(
+    scalar_t initTime, const vector_t& initState, size_t initMode, scalar_t finalTime, const ControllerBase* externalControllerPtr) {
+  preRun(initTime, initState, initMode, finalTime);
   runImpl(initTime, initState, finalTime, externalControllerPtr);
   postRun();
 }
@@ -64,8 +65,9 @@ void SolverBase::run(scalar_t initTime, const vector_t& initState, scalar_t fina
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void SolverBase::run(scalar_t initTime, const vector_t& initState, scalar_t finalTime, const PrimalSolution& primalSolution) {
-  preRun(initTime, initState, finalTime);
+void SolverBase::run(
+    scalar_t initTime, const vector_t& initState, size_t initMode, scalar_t finalTime, const PrimalSolution& primalSolution) {
+  preRun(initTime, initState, initMode, finalTime);
   runImpl(initTime, initState, finalTime, primalSolution);
   postRun();
 }
@@ -90,8 +92,8 @@ void SolverBase::printString(const std::string& text) const {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void SolverBase::preRun(scalar_t initTime, const vector_t& initState, scalar_t finalTime) {
-  referenceManagerPtr_->preSolverRun(initTime, finalTime, initState);
+void SolverBase::preRun(scalar_t initTime, const vector_t& initState, size_t initMode, scalar_t finalTime) {
+  referenceManagerPtr_->preSolverRun(initTime, finalTime, initState, initMode);
 
   for (auto& module : synchronizedModules_) {
     module->preSolverRun(initTime, finalTime, initState, *referenceManagerPtr_);

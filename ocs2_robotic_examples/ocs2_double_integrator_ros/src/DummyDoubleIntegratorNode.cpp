@@ -27,11 +27,11 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  ******************************************************************************/
 
-#include <ros/init.h>
-#include <ros/package.h>
+#include <rclcpp/rclcpp.hpp>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
-#include <ocs2_ros_interfaces/mrt/MRT_ROS_Dummy_Loop.h>
-#include <ocs2_ros_interfaces/mrt/MRT_ROS_Interface.h>
+#include <ocs2_ros2_interfaces/mrt/MRT_ROS_Dummy_Loop.h>
+#include <ocs2_ros2_interfaces/mrt/MRT_ROS_Interface.h>
 
 #include <ocs2_double_integrator/DoubleIntegratorInterface.h>
 #include <ocs2_double_integrator/definitions.h>
@@ -42,26 +42,25 @@ int main(int argc, char** argv) {
   const std::string robotName = "double_integrator";
 
   // task file
-  std::vector<std::string> programArgs{};
-  ::ros::removeROSArgs(argc, argv, programArgs);
+  std::vector<std::string> programArgs = rclcpp::remove_ros_arguments(argc, argv);
   if (programArgs.size() <= 1) {
     throw std::runtime_error("No task file specified. Aborting.");
   }
   std::string taskFileFolderName = std::string(programArgs[1]);
 
   // Initialize ros node
-  ros::init(argc, argv, robotName + "_mrt");
-  ros::NodeHandle nodeHandle;
+  rclcpp::init(argc, argv);
+  rclcpp::Node::SharedPtr nodeHandle = rclcpp::Node::make_shared(robotName + "_mrt");
 
   // Robot interface
-  const std::string taskFile = ros::package::getPath("ocs2_double_integrator") + "/config/" + taskFileFolderName + "/task.info";
-  const std::string libFolder = ros::package::getPath("ocs2_double_integrator") + "/auto_generated";
+  const std::string taskFile = ament_index_cpp::get_package_share_directory("ocs2_double_integrator") + "/config/" + taskFileFolderName + "/task.info";
+  const std::string libFolder = ament_index_cpp::get_package_share_directory("ocs2_double_integrator") + "/auto_generated";
   ocs2::double_integrator::DoubleIntegratorInterface doubleIntegratorInterface(taskFile, libFolder);
 
   // MRT
   ocs2::MRT_ROS_Interface mrt(robotName);
   mrt.initRollout(&doubleIntegratorInterface.getRollout());
-  mrt.launchNodes(nodeHandle);
+  mrt.launchNodes(nodeHandle, rclcpp::QoS(1));
 
   // Visualization
   auto doubleIntegratorDummyVisualization = std::make_shared<ocs2::double_integrator::DoubleIntegratorDummyVisualization>(nodeHandle);

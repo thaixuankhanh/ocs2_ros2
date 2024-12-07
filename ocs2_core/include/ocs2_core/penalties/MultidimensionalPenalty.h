@@ -121,6 +121,13 @@ class MultidimensionalPenalty final {
    */
   vector_t initializeMultipliers(size_t numConstraints) const;
 
+  /**
+   * Get the penalty function array.
+   *
+   * @return The penalty function array.
+   */
+  std::vector<std::unique_ptr<augmented::AugmentedPenaltyBase>>& getPenaltyPtrArray() { return penaltyPtrArray_; }
+
  private:
   std::tuple<scalar_t, vector_t, vector_t> getPenaltyValue1stDev2ndDev(scalar_t t, const vector_t& h, const vector_t* l) const;
 

@@ -50,6 +50,12 @@ class StateInputConstraint {
   /** Check constraint activity */
   virtual bool isActive(scalar_t time) const { return true; }
 
+  /** Set constraint activity */
+  virtual void setActive(bool active) {}
+
+  /** Get constraint activity */
+  virtual bool getActive() const { return true; }
+
   /** Get the size of the constraint vector at given time */
   virtual size_t getNumConstraints(scalar_t time) const = 0;
 

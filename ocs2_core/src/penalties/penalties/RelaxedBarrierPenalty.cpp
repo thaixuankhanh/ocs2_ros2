@@ -65,4 +65,24 @@ scalar_t RelaxedBarrierPenalty::getSecondDerivative(scalar_t t, scalar_t h) cons
   };
 }
 
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
+void RelaxedBarrierPenalty::setParameters(const vector_t& parameters) {
+  if (parameters.size() != 2) {
+    throw std::runtime_error("RelaxedBarrierPenalty::setParameters: Invalid number of parameters.");
+  }
+  config_.mu = parameters[0];
+  config_.delta = parameters[1];
+}
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
+void RelaxedBarrierPenalty::getParameters(vector_t& parameters) const {
+  parameters.resize(2);
+  parameters[0] = config_.mu;
+  parameters[1] = config_.delta;
+}
+
 }  // namespace ocs2

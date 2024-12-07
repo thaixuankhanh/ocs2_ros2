@@ -86,6 +86,20 @@ class AugmentedPenaltyBase {
   virtual scalar_t getSecondDerivative(scalar_t t, scalar_t l, scalar_t h) const = 0;
 
   /**
+   * Set custom parameters of the penalty function.
+   *
+   * @param [in] parameters: The parameters of the penalty function.
+   */
+  virtual void setParameters(const vector_t& /*parameters*/) {}
+
+  /**
+   * Get the number of parameters of the penalty function.
+   *
+   * @return number of parameters.
+   */
+  virtual void getParameters(vector_t& /*parameters*/) const {}
+
+  /**
    * Updates the Lagrange multiplier.
    *
    * @param [in] t: The time stamp.

@@ -55,6 +55,8 @@ class PinocchioEndEffectorKinematics final : public EndEffectorKinematics<scalar
  public:
   using EndEffectorKinematics<scalar_t>::vector3_t;
   using EndEffectorKinematics<scalar_t>::matrix3x_t;
+  using EndEffectorKinematics<scalar_t>::vector6_t;
+  using EndEffectorKinematics<scalar_t>::matrix6x_t;
   using EndEffectorKinematics<scalar_t>::quaternion_t;
 
   /** Constructor
@@ -94,12 +96,44 @@ class PinocchioEndEffectorKinematics final : public EndEffectorKinematics<scalar
    */
   std::vector<vector3_t> getVelocity(const vector_t& state, const vector_t& input) const override;
 
+  /**
+   * Get orientation w.r.t. world frame
+   *
+   * @param [in] state vector
+   * @return array of quaternions
+   */
+  std::vector<quaternion_t> getOrientation(const vector_t& state) const override;
+
   /** Get the end effector orientation error.
    * @note requires pinocchioInterface to be updated with:
    *       pinocchio::forwardKinematics(model, data, q)
    *       pinocchio::updateFramePlacements(model, data)
    */
   std::vector<vector3_t> getOrientationError(const vector_t& state, const std::vector<quaternion_t>& referenceOrientations) const override;
+
+  /**
+   * Get orientation error with respect to a plane in world frame
+   * @note requires pinocchioInterface to be updated with:
+   *       pinocchio::forwardKinematics(model, data, q)
+   *       pinocchio::updateFramePlacements(model, data)
+   */
+  std::vector<vector3_t> getOrientationErrorWrtPlane(const vector_t& state, const std::vector<vector3_t>& planeNormals) const override;
+
+  /**
+   * Get end-effector angular velocity vectors in world frame
+   * @note requires pinocchioInterface to be updated with:
+   *       pinocchio::forwardKinematics(model, data, q)
+   *       pinocchio::updateFramePlacements(model, data)
+   */
+  std::vector<vector3_t> getAngularVelocity(const vector_t& state, const vector_t& input) const override;
+
+  /**
+   * Get end-effector twist (linear & angular velocity) vectors in world frame
+   * @note requires pinocchioInterface to be updated with:
+   *       pinocchio::forwardKinematics(model, data, q)
+   *       pinocchio::updateFramePlacements(model, data)
+   */
+  std::vector<vector6_t> getTwist(const vector_t& state, const vector_t& input) const override;
 
   /** Get the end effector position linear approximation.
    * @note requires pinocchioInterface to be updated with:
@@ -124,6 +158,36 @@ class PinocchioEndEffectorKinematics final : public EndEffectorKinematics<scalar
    */
   std::vector<VectorFunctionLinearApproximation> getOrientationErrorLinearApproximation(
       const vector_t& state, const std::vector<quaternion_t>& referenceOrientations) const override;
+
+  /**
+   * Get end-effector angular velocity linear approximation in world frame
+   * @note requires pinocchioInterface to be updated with:
+   *       pinocchio::forwardKinematics(model, data, q)
+   *       pinocchio::updateFramePlacements(model, data)
+   *       pinocchio::computeJointJacobians(model, data)
+   */
+  std::vector<VectorFunctionLinearApproximation> getAngularVelocityLinearApproximation(const vector_t& state,
+                                                                                       const vector_t& input) const override;
+
+  /**
+   * Get end-effector twist (linear & angular velocity) linear approximation in world frame
+   * @note requires pinocchioInterface to be updated with:
+   *       pinocchio::forwardKinematics(model, data, q)
+   *       pinocchio::updateFramePlacements(model, data)
+   *       pinocchio::computeJointJacobians(model, data)
+   */
+  std::vector<VectorFunctionLinearApproximation> getTwistLinearApproximation(const vector_t& state, const vector_t& input) const override;
+
+  /**
+   * Get end-effector orintation error with respect to plane linear approximation in world frame
+   * @note requires pinocchioInterface to be updated with:
+   *       pinocchio::forwardKinematics(model, data, q)
+   *       pinocchio::updateFramePlacements(model, data)
+   *       pinocchio::computeJointJacobians(model, data)
+   */
+
+  std::vector<VectorFunctionLinearApproximation> getOrientationErrorWrtPlaneLinearApproximation(
+      const vector_t& state, const std::vector<vector3_t>& planeNormals) const override;
 
  private:
   PinocchioEndEffectorKinematics(const PinocchioEndEffectorKinematics& rhs);

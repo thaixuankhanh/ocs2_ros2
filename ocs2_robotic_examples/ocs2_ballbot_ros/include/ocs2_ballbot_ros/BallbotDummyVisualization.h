@@ -29,10 +29,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #pragma once
 
-#include <robot_state_publisher/robot_state_publisher.h>
-#include <tf/transform_broadcaster.h>
+#include <tf2_ros/transform_broadcaster.h>
+#include <sensor_msgs/msg/joint_state.hpp>
 
-#include <ocs2_ros_interfaces/mrt/DummyObserver.h>
+#include <ocs2_ros2_interfaces/mrt/DummyObserver.h>
+#include <rclcpp/rclcpp.hpp>
 
 #include <ocs2_ballbot/definitions.h>
 
@@ -41,17 +42,18 @@ namespace ballbot {
 
 class BallbotDummyVisualization final : public DummyObserver {
  public:
-  explicit BallbotDummyVisualization(ros::NodeHandle& nodeHandle) { launchVisualizerNode(nodeHandle); }
+  explicit BallbotDummyVisualization(rclcpp::Node::SharedPtr nodeHandle) : nodeHandle_(nodeHandle) { launchVisualizerNode(); }
 
   ~BallbotDummyVisualization() override = default;
 
   void update(const SystemObservation& observation, const PrimalSolution& policy, const CommandData& command) override;
 
  private:
-  void launchVisualizerNode(ros::NodeHandle& nodeHandle);
+  void launchVisualizerNode();
 
-  std::unique_ptr<robot_state_publisher::RobotStatePublisher> robotStatePublisherPtr_;
-  tf::TransformBroadcaster tfBroadcaster_;
+  rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr jointPublisher_;
+  std::unique_ptr<tf2_ros::TransformBroadcaster> tfBroadcaster_{};
+  rclcpp::Node::SharedPtr nodeHandle_;
 };
 
 }  // namespace ballbot

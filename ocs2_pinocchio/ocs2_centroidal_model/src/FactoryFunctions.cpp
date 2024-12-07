@@ -104,11 +104,11 @@ CentroidalModelInfo createCentroidalModelInfo(const PinocchioInterface& interfac
   info.robotMass = pinocchio::computeTotalMass(model);
 
   for (const auto& name : threeDofContactNames) {
-    info.endEffectorFrameIndices.push_back(model.getBodyId(name));
+    info.endEffectorFrameIndices.push_back(model.getFrameId(name));
   }
 
   for (const auto& name : sixDofContactNames) {
-    info.endEffectorFrameIndices.push_back(model.getBodyId(name));
+    info.endEffectorFrameIndices.push_back(model.getFrameId(name));
   }
 
   // make sure the nominal base frame is aligned with the world frame

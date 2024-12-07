@@ -41,9 +41,9 @@ LoopshapingReferenceManager::LoopshapingReferenceManager(std::shared_ptr<Referen
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void LoopshapingReferenceManager::preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState) {
+void LoopshapingReferenceManager::preSolverRun(scalar_t initTime, scalar_t finalTime, const vector_t& initState, size_t initMode) {
   const vector_t systemState = loopshapingDefinitionPtr_->getSystemState(initState);
-  referenceManagerPtr_->preSolverRun(initTime, finalTime, systemState);
+  referenceManagerPtr_->preSolverRun(initTime, finalTime, systemState, initMode);
 };
 
 }  // namespace ocs2

@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <iomanip>
 #include <iostream>
 #include <numeric>
+#include <fstream>
 
 #include <boost/filesystem.hpp>
 
@@ -123,6 +124,15 @@ void SqpSolver::reset() {
   solveQpTimer_.reset();
   linesearchTimer_.reset();
   computeControllerTimer_.reset();
+}
+
+SqpSolver::Benchmarks SqpSolver::getBenchmarks() const {
+  Benchmarks benchmarks;
+  benchmarks.linearQuadraticApproximationTime = linearQuadraticApproximationTimer_.getLastIntervalInMilliseconds();
+  benchmarks.solveQpTime = solveQpTimer_.getLastIntervalInMilliseconds();
+  benchmarks.linesearchTime = linesearchTimer_.getLastIntervalInMilliseconds();
+  benchmarks.computeControllerTime = computeControllerTimer_.getLastIntervalInMilliseconds();
+  return benchmarks;
 }
 
 std::string SqpSolver::getBenchmarkingInformation() const {
@@ -333,8 +343,11 @@ PrimalSolution SqpSolver::toPrimalSolution(const std::vector<AnnotatedTime>& tim
   }
 }
 
-PerformanceIndex SqpSolver::setupQuadraticSubproblem(const std::vector<AnnotatedTime>& time, const vector_t& initState,
-                                                     const vector_array_t& x, const vector_array_t& u, std::vector<Metrics>& metrics) {
+PerformanceIndex SqpSolver::setupQuadraticSubproblem(const std::vector<AnnotatedTime>& time,
+                                                     const vector_t& initState,
+                                                     const vector_array_t& x,
+                                                     const vector_array_t& u,
+                                                     std::vector<Metrics>& metrics) {
   // Problem horizon
   const int N = static_cast<int>(time.size()) - 1;
 
@@ -417,8 +430,11 @@ PerformanceIndex SqpSolver::setupQuadraticSubproblem(const std::vector<Annotated
   return totalPerformance;
 }
 
-PerformanceIndex SqpSolver::computePerformance(const std::vector<AnnotatedTime>& time, const vector_t& initState, const vector_array_t& x,
-                                               const vector_array_t& u, std::vector<Metrics>& metrics) {
+PerformanceIndex SqpSolver::computePerformance(const std::vector<AnnotatedTime>& time,
+                                               const vector_t& initState,
+                                               const vector_array_t& x,
+                                               const vector_array_t& u,
+                                               std::vector<Metrics>& metrics) {
   // Problem size
   const int N = static_cast<int>(time.size()) - 1;
   metrics.resize(N + 1);
@@ -465,9 +481,13 @@ PerformanceIndex SqpSolver::computePerformance(const std::vector<AnnotatedTime>&
   return totalPerformance;
 }
 
-sqp::StepInfo SqpSolver::takeStep(const PerformanceIndex& baseline, const std::vector<AnnotatedTime>& timeDiscretization,
-                                  const vector_t& initState, const OcpSubproblemSolution& subproblemSolution, vector_array_t& x,
-                                  vector_array_t& u, std::vector<Metrics>& metrics) {
+sqp::StepInfo SqpSolver::takeStep(const PerformanceIndex& baseline,
+                                  const std::vector<AnnotatedTime>& timeDiscretization,
+                                  const vector_t& initState,
+                                  const OcpSubproblemSolution& subproblemSolution,
+                                  vector_array_t& x,
+                                  vector_array_t& u,
+                                  std::vector<Metrics>& metrics) {
   using StepType = FilterLinesearch::StepType;
 
   /*

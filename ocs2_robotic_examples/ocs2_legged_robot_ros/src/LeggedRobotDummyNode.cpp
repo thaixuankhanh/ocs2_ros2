@@ -27,14 +27,14 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ******************************************************************************/
 
-#include <ros/init.h>
-#include <ros/package.h>
+#include "ament_index_cpp/get_package_share_directory.hpp"
+#include "rclcpp/rclcpp.hpp"
 
 #include <ocs2_centroidal_model/CentroidalModelPinocchioMapping.h>
 #include <ocs2_legged_robot/LeggedRobotInterface.h>
 #include <ocs2_pinocchio_interface/PinocchioEndEffectorKinematics.h>
-#include <ocs2_ros_interfaces/mrt/MRT_ROS_Dummy_Loop.h>
-#include <ocs2_ros_interfaces/mrt/MRT_ROS_Interface.h>
+#include <ocs2_ros2_interfaces/mrt/MRT_ROS_Dummy_Loop.h>
+#include <ocs2_ros2_interfaces/mrt/MRT_ROS_Interface.h>
 
 #include "ocs2_legged_robot_ros/visualization/LeggedRobotVisualizer.h"
 
@@ -44,14 +44,23 @@ using namespace legged_robot;
 int main(int argc, char** argv) {
   const std::string robotName = "legged_robot";
 
+  std::vector<std::string> programArgs = rclcpp::remove_ros_arguments(argc, argv);
+  if (programArgs.size() <= 1) {
+    throw std::runtime_error("No task file specified. Aborting.");
+  }
+  std::string taskFileFolderName = std::string(programArgs[1]);
+  std::string referenceFileFolderName = std::string(programArgs[2]);
+
   // Initialize ros node
-  ros::init(argc, argv, robotName + "_mrt");
-  ros::NodeHandle nodeHandle;
+  rclcpp::init(argc, argv);
+  rclcpp::Node::SharedPtr nodeHandle = rclcpp::Node::make_shared(robotName + "_mrt");
+
   // Get node parameters
-  std::string taskFile, urdfFile, referenceFile;
-  nodeHandle.getParam("/taskFile", taskFile);
-  nodeHandle.getParam("/urdfFile", urdfFile);
-  nodeHandle.getParam("/referenceFile", referenceFile);
+  const std::string taskFile =
+      ament_index_cpp::get_package_share_directory("ocs2_legged_robot") + "/config/" + taskFileFolderName + "/task.info";
+  const std::string referenceFile =
+      ament_index_cpp::get_package_share_directory("ocs2_legged_robot") + "/config/" + referenceFileFolderName + "/reference.info";
+  const std::string urdfFile = ament_index_cpp::get_package_share_directory("ocs2_legged_robot_ros") + "/urdf/urdf/anymal.urdf";
 
   // Robot interface
   LeggedRobotInterface interface(taskFile, urdfFile, referenceFile);
@@ -59,7 +68,7 @@ int main(int argc, char** argv) {
   // MRT
   MRT_ROS_Interface mrt(robotName);
   mrt.initRollout(&interface.getRollout());
-  mrt.launchNodes(nodeHandle);
+  mrt.launchNodes(nodeHandle, rclcpp::QoS(1));
 
   // Visualization
   CentroidalModelPinocchioMapping pinocchioMapping(interface.getCentroidalModelInfo());

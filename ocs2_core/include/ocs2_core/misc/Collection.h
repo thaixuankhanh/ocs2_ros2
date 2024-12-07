@@ -97,6 +97,12 @@ class Collection {
    */
   bool getTermIndex(const std::string& name, size_t& index) const;
 
+  /**
+   * Returns a copy of the term index map.
+   * @return Lookup from cost term name to index in the cost term vector
+   */
+  std::unordered_map<std::string, size_t> getTermNameMap() const { return termNameMap_; }
+
  protected:
   /** Copy constructor */
   Collection(const Collection& other);

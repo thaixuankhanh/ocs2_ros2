@@ -9,9 +9,9 @@ TEST(testFeedforwardController, testSerialization) {
   vector_array_t uff = {vector_t::Random(2), vector_t::Random(2)};
   FeedforwardController controller(time, uff);
 
-  std::vector<std::vector<float>> data(2);
-  std::vector<std::vector<float>*> dataPtr{&data[0], &data[1]};
-  std::vector<std::vector<float> const*> dataPtrConst{&data[0], &data[1]};
+  std::vector<std::vector<double>> data(2);
+  std::vector<std::vector<double>*> dataPtr{&data[0], &data[1]};
+  std::vector<std::vector<double> const*> dataPtrConst{&data[0], &data[1]};
 
   controller.flatten(time, dataPtr);
 

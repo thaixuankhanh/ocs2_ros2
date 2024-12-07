@@ -49,9 +49,23 @@ class QuadraticStateCost : public StateCost {
   scalar_t getValue(scalar_t time, const vector_t& state, const TargetTrajectories& targetTrajectories, const PreComputation&) const final;
 
   /** Get cost term quadratic approximation */
-  ScalarFunctionQuadraticApproximation getQuadraticApproximation(scalar_t time, const vector_t& state,
+  ScalarFunctionQuadraticApproximation getQuadraticApproximation(scalar_t time,
+                                                                 const vector_t& state,
                                                                  const TargetTrajectories& targetTrajectories,
                                                                  const PreComputation&) const final;
+
+  virtual bool isActive(scalar_t time) const override { return isActive_; }
+  /** Set constraint activity */
+  void setActive(bool active) { isActive_ = active; }
+
+  /** Get constraint activity */
+  bool getActive() const { return isActive_; }
+
+  /** Set the gain matrices */
+  void setGains(matrix_t Q);
+
+  /** Get the gain matrices */
+  void getGains(matrix_t& Q) const;
 
  protected:
   QuadraticStateCost(const QuadraticStateCost& rhs) = default;
@@ -62,6 +76,7 @@ class QuadraticStateCost : public StateCost {
 
  private:
   matrix_t Q_;
+  bool isActive_ = true;
 };
 
 }  // namespace ocs2

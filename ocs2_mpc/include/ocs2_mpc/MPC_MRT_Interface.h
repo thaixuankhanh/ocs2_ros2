@@ -61,6 +61,8 @@ class MPC_MRT_Interface final : public MRT_BASE {
 
   void setCurrentObservation(const SystemObservation& currentObservation) override;
 
+  SystemObservation getCurrentObservation();
+
   /*
    * Gets the ReferenceManager which manages both ModeSchedule and TargetTrajectories.
    */

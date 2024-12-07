@@ -91,6 +91,17 @@ class SqpSolver : public SolverBase {
     throw std::runtime_error("[SqpSolver] getIntermediateDualSolution() not available yet.");
   }
 
+  std::vector<OptimalControlProblem>& getOcpDefinitions() { return ocpDefinitions_; }
+
+  /** All timings are expressed in milliseconds */
+  struct Benchmarks {
+    scalar_t linearQuadraticApproximationTime;
+    scalar_t solveQpTime;
+    scalar_t linesearchTime;
+    scalar_t computeControllerTime;
+  };
+  Benchmarks getBenchmarks() const;
+
  private:
   void runImpl(scalar_t initTime, const vector_t& initState, scalar_t finalTime) override;
 

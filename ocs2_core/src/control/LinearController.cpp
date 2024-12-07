@@ -89,7 +89,7 @@ vector_t LinearController::computeInput(scalar_t t, const vector_t& x) {
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void LinearController::flatten(const scalar_array_t& timeArray, const std::vector<std::vector<float>*>& flatArray2) const {
+void LinearController::flatten(const scalar_array_t& timeArray, const std::vector<std::vector<double>*>& flatArray2) const {
   const auto timeSize = timeArray.size();
   const auto dataSize = flatArray2.size();
 
@@ -105,7 +105,7 @@ void LinearController::flatten(const scalar_array_t& timeArray, const std::vecto
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
-void LinearController::flattenSingle(scalar_t time, std::vector<float>& flatArray) const {
+void LinearController::flattenSingle(scalar_t time, std::vector<double>& flatArray) const {
   /* Serialized linear controller:
    * data = [
    *   // t0
@@ -139,9 +139,9 @@ void LinearController::flattenSingle(scalar_t time, std::vector<float>& flatArra
   flatArray.resize(uff.size() + k.size());
 
   for (int i = 0; i < inputDim; i++) {  // i loops through rows of uff and k
-    flatArray[i * (stateDim + 1) + 0] = static_cast<float>(uff(i));
+    flatArray[i * (stateDim + 1) + 0] = uff(i);
     for (int j = 0; j < stateDim; j++) {  // j loops through cols of k
-      flatArray[i * (stateDim + 1) + j + 1] = static_cast<float>(k(i, j));
+      flatArray[i * (stateDim + 1) + j + 1] = k(i, j);
     }
   }
 }
@@ -150,7 +150,7 @@ void LinearController::flattenSingle(scalar_t time, std::vector<float>& flatArra
 /******************************************************************************************************/
 /******************************************************************************************************/
 LinearController LinearController::unFlatten(const size_array_t& stateDim, const size_array_t& inputDim, const scalar_array_t& timeArray,
-                                             const std::vector<std::vector<float> const*>& flatArray2) {
+                                             const std::vector<std::vector<double> const*>& flatArray2) {
   vector_array_t bias;
   matrix_array_t gain;
 
@@ -168,7 +168,7 @@ LinearController LinearController::unFlatten(const size_array_t& stateDim, const
     const auto& arr = *flatArray2[k];
     for (int i = 0; i < inputDim[k]; i++) {  // loop through input dim
       bias.back()(i) = static_cast<scalar_t>(arr[i * (stateDim[k] + 1) + 0]);
-      gain.back().row(i) = Eigen::Map<const Eigen::VectorXf>(&(arr[i * (stateDim[k] + 1) + 1]), stateDim[k]).cast<scalar_t>();
+      gain.back().row(i) = Eigen::Map<const Eigen::VectorXd>(&(arr[i * (stateDim[k] + 1) + 1]), stateDim[k]);
     }
   }
   return LinearController(timeArray, std::move(bias), std::move(gain));

@@ -49,4 +49,6 @@ using ad_vector_t = Eigen::Matrix<ad_scalar_t, Eigen::Dynamic, 1>;
 
 using ad_matrix_t = Eigen::Matrix<ad_scalar_t, Eigen::Dynamic, Eigen::Dynamic>;
 
+using ad_quaternion_t = Eigen::Quaternion<ad_scalar_t>;
+
 }  // namespace ocs2

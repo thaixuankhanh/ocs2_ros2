@@ -374,6 +374,21 @@ vector_t GaussNewtonDDP::getStateInputEqualityConstraintLagrangianImpl(scalar_t 
 /******************************************************************************************************/
 /******************************************************************************************************/
 /******************************************************************************************************/
+
+GaussNewtonDDP::Benchmarks GaussNewtonDDP::getBenchmarks() const {
+  Benchmarks benchmarks;
+  benchmarks.initializationTime = initializationTimer_.getLastIntervalInMilliseconds();
+  benchmarks.linearQuadraticApproximationTime = linearQuadraticApproximationTimer_.getLastIntervalInMilliseconds();
+  benchmarks.backwardPassTime = backwardPassTimer_.getLastIntervalInMilliseconds();
+  benchmarks.computeControllerTime = computeControllerTimer_.getLastIntervalInMilliseconds();
+  benchmarks.searchStrategyTime = searchStrategyTimer_.getLastIntervalInMilliseconds();
+  benchmarks.totalDualSolutionTime = totalDualSolutionTimer_.getLastIntervalInMilliseconds();
+  return benchmarks;
+}
+
+/******************************************************************************************************/
+/******************************************************************************************************/
+/******************************************************************************************************/
 bool GaussNewtonDDP::rolloutInitialController(PrimalSolution& inputPrimalSolution, PrimalSolution& outputPrimalSolution) {
   if (inputPrimalSolution.controllerPtr_->empty()) {
     return false;

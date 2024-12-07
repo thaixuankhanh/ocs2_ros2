@@ -40,7 +40,8 @@ namespace ocs2 {
  */
 struct TargetTrajectories {
   explicit TargetTrajectories(size_t size = 0);
-  TargetTrajectories(scalar_array_t desiredTimeTrajectory, vector_array_t desiredStateTrajectory,
+  TargetTrajectories(scalar_array_t desiredTimeTrajectory,
+                     vector_array_t desiredStateTrajectory,
                      vector_array_t desiredInputTrajectory = vector_array_t());
   void clear();
   bool empty() const { return timeTrajectory.empty() || stateTrajectory.empty(); }
