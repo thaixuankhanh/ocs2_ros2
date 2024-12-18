@@ -93,6 +93,17 @@ inline void loadPtreeValue(const boost::property_tree::ptree& pt, T& value, cons
 }
 
 /**
+ * An auxiliary function to check if the property tree has a certain value
+ *
+ * @param[in] pt: Fully initialized tree object
+ * @param[in] name: Property field name
+ */
+
+inline bool containsPtreeValueFind(const boost::property_tree::ptree& pt, const std::string& name) {
+  return pt.find(name) != pt.not_found();
+}
+
+/**
  * An auxiliary function which loads value of the c++ data types from a file. The file uses property tree data structure with INFO format
  * (refer to https://www.boost.org/doc/libs/1_65_1/doc/html/property_tree.html).
  *
