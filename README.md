@@ -1,5 +1,5 @@
 # OCS2 Toolbox
-A fork of the Optimal Control for Switched Systems (OCS2) library updating it to ros2 communication and the colcon build system. 
+An updated version of the Optimal Control for Switched Systems (OCS2) library including ros2 communication, colcon build system and functionality for improved interactivity (Gain setting, anabling disabling costs and constraints). 
 
 ## Summary
 OCS2 is a C++ toolbox tailored for Optimal Control for Switched Systems (OCS2). The toolbox provides an efficient implementation of the following algorith
