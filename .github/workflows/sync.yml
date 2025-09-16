@@ -29,6 +29,5 @@ jobs:
         run: git merge upstream/main --allow-unrelated-histories || true
 
       - name: Push to your repo
-        run: git push origin main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
